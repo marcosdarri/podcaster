@@ -1,0 +1,33 @@
+.card {
+  width: 300px;
+  background-color: white;
+  height: 110%;
+  border-radius: 5px;
+  position: relative;
+  top: 29%;
+  box-shadow: 5px 5px 10px 2px rgba(199, 195, 195, 0.8);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  .img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+
+    position: relative;
+    bottom: 90px;
+  }
+  .body{
+    position: absolute;
+    bottom: 0%;
+    text-align: center;
+    width: 100%;
+    color: black;
+
+    h5{
+        padding: 0 20px;
+    }
+  }
+}
