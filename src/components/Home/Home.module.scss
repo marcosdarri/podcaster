@@ -1,0 +1,67 @@
+@import "../../styles/globalStyles.module.scss";
+
+.container {
+  font-family: sans-serif;
+  margin: 3%;
+ 
+
+  .title {
+    margin: 0px;
+    margin-left: 40px;
+    color: $primary;
+    border-bottom: 1px solid lightgray;
+  }
+
+  .filterRow {
+    display: flex;
+    justify-content: right;
+    margin-top: 3rem;
+    margin-right: 30px;
+
+    .col {
+      display: flex;
+
+      .total {
+        color: white;
+        font-size: 18px;
+        background-color: $primary;
+        padding: 8px;
+        border-radius: 15px;
+        font-weight: bold;
+        height: 18px;
+        margin-right: 10px;
+      }
+
+      .filter {
+        border-radius: 5px;
+        height: 33px;
+        width: 300px;
+        border: 1px solid gray;
+        padding: 5px;
+        padding-left: 15px;
+
+        &:focus {
+          border: 1px solid red !important;
+        }
+      }
+    }
+  }
+
+  .grid {
+    margin-top: 5rem;
+
+    .gridRow {
+      display: flex;
+      justify-content: space-evenly;
+      margin-bottom: 160px;
+
+      .col{
+        text-align: center;
+      }
+
+      .emptyCol{
+        text-align: center;
+      }
+    }
+  }
+}
