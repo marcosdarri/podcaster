@@ -1,0 +1,17 @@
+.grid {
+  margin-top: 5rem;
+
+  .gridRow {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 160px;
+
+    .col {
+      text-align: center;
+    }
+
+    .emptyCol {
+      text-align: center;
+    }
+  }
+}
