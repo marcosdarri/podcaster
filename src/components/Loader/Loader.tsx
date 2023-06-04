@@ -1,16 +1,16 @@
-import React, { Fragment, CSSProperties } from "react";
+import React, { CSSProperties } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 
-import "./Loader.module.scss"
+import "./Loader.module.scss";
 
-const Loader = ({ loading }) => {
+const Loader = ({ loading, text }) => {
   const override: CSSProperties = {
     display: "block",
     margin: "0 auto",
     borderColor: "#0066b2",
   };
   return (
-    <div style={{textAlign: "center"}}>
+    <div style={{ textAlign: "center" }}>
       <ClipLoader
         color={"#0066b2"}
         loading={loading}
@@ -19,7 +19,7 @@ const Loader = ({ loading }) => {
         aria-label="Loading Spinner"
         data-testid="loader"
       />
-      <p>Loading...</p>{" "}
+      {text ? <p>Loading...</p> : null}
     </div>
   );
 };
