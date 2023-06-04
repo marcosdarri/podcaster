@@ -1,36 +1,41 @@
 @import "../../styles/globalStyles.module.scss";
 
 .filterRow {
+  display: flex;
+  margin-top: 3rem;
+  margin-right: 30px;
+  height: 33px;
+
+  .col {
     display: flex;
     justify-content: right;
-    margin-top: 3rem;
-    margin-right: 30px;
 
-    .col {
+    .total {
+      color: white;
+      font-size: 18px;
+      background-color: #0066b2;
       display: flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      padding: 0px 10px;
+      border-radius: 15px;
+      font-weight: bold;
+      height: 100%;
+      margin-right: 10px;
+    }
 
-      .total {
-        color: white;
-        font-size: 18px;
-        background-color: $primary;
-        padding: 8px;
-        border-radius: 15px;
-        font-weight: bold;
-        height: 18px;
-        margin-right: 10px;
-      }
+    .filter {
+      border-radius: 5px;
+      height: 100%;
+      width: 300px;
+      border: 1px solid gray;
+      padding: 5px;
+      padding-left: 15px;
 
-      .filter {
-        border-radius: 5px;
-        height: 33px;
-        width: 300px;
-        border: 1px solid gray;
-        padding: 5px;
-        padding-left: 15px;
-
-        &:focus {
-          border: 1px solid red !important;
-        }
+      &:focus {
+        border: none !important;
       }
     }
   }
+}
