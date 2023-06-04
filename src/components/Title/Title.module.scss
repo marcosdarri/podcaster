@@ -1,14 +1,23 @@
 @import "../../styles/globalStyles.module.scss";
 
-.titleRow {
+.link{
+  text-decoration: none;
+  margin-left: 0px;
+
+  &:hover{
+    text-decoration: none;
+  }
+  .row {
+    margin: 3%;
+    margin-left: 0px;
     font-family: sans-serif;
     &:hover {
       cursor: pointer;
     }
     .title {
-      margin-left: 40px;
       color: $primary;
       border-bottom: 1px solid lightgray;
       font-size: 38px;
     }
   }
+}
