@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Row } from "reactstrap";
 import Title from "../Title/Title";
 import Filter from "../Filter/Filter";
@@ -22,11 +22,19 @@ const Home = () => {
       .then((data) => {
         let newData = [];
         setTotal(data.feed.entry.length);
-        data.feed.entry.forEach((dataValue: any) => {
-          let podcast = { img: "", title: "", author: "" };
+        data.feed.entry.forEach((dataValue: any, index: number) => {
+          let podcast = {
+            id: 0,
+            img: "",
+            title: "",
+            author: "",
+            description: "",
+          };
+          podcast.id = dataValue.id.attributes["im:id"];
           podcast.img = dataValue["im:image"][2].label;
           podcast.title = dataValue.title.label;
           podcast.author = dataValue["im:artist"].label;
+          podcast.description = dataValue.summary.label;
           newData.push(podcast);
         });
         setData(newData);
@@ -60,7 +68,7 @@ const Home = () => {
     if (!storedData) {
       setTimeout(() => {
         fetchData();
-      }, 1000);
+      }, 500);
     } else {
       const { timestamp } = JSON.parse(storedData);
       const currentTime = new Date().getTime();
@@ -71,13 +79,13 @@ const Home = () => {
         localStorage.removeItem(localStorageKey);
         setTimeout(() => {
           fetchData();
-        }, 1000);
+        }, 500);
       } else {
         setTimeout(() => {
           getExistingData();
           console.log("Fetching localStorage data successful.");
           setLoading(false);
-        }, 1000);
+        }, 500);
       }
     }
   };
@@ -132,11 +140,12 @@ const Home = () => {
   }
 
   return (
-    <Row className={style.container}>
-      <Title />
+    <div className={style.container}>
+      
+      <Title loading={loading} />
       <Filter setFilterText={setFilterText} total={total} />
       <PodcastGrid loading={loading} total={total} rows={rows} />
-    </Row>
+    </div>
   );
 };
 
