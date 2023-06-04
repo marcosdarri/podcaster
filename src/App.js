@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage.tsx";
 import Podcasts from "./pages/Podcasts.tsx";
+import EpisodeDetailPage from "./pages/EpisodeDetailPage.tsx";
 
 function App() {
   return (
@@ -10,8 +11,11 @@ function App() {
           <Route exact path="/">
             <HomePage />
           </Route>
-          <Route path="/podcast">
+          <Route path="/podcast/:id">
             <Podcasts />
+          </Route>
+          <Route path="/:episodeid">
+            <EpisodeDetailPage />
           </Route>
         </Switch>
       </Router>
