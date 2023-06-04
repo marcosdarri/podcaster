@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, CardGroup } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import PodcastCard from "../PodcastCard/PodcastCard";
 import Loader from "../Loader/Loader";
 
@@ -9,11 +9,14 @@ const PodcastGrid = ({ loading, rows, total }) => {
   return (
     <Row className={style.grid}>
       {loading ? (
-        <Loader loading={loading} />
+          <Row className={style.loaderRow}>
+             <Loader loading={loading} text/>
+          </Row>
+       
       ) : (
-        <CardGroup>
+        <>
           {rows && total > 0 ? (
-            rows.map((row, index) => {
+            rows.map((row:any, index:number) => {
               return (
                 <Row className={style.gridRow} key={index}>
                   {row.map((rowItem: any, index: number) => {
@@ -24,6 +27,7 @@ const PodcastGrid = ({ loading, rows, total }) => {
                         key={index}
                       >
                         <PodcastCard
+                          id={rowItem.id}
                           title={rowItem.title}
                           author={rowItem.author}
                           img={rowItem.img}
@@ -41,7 +45,7 @@ const PodcastGrid = ({ loading, rows, total }) => {
               </Col>
             </Row>
           )}
-        </CardGroup>
+       </>
       )}
     </Row>
   );

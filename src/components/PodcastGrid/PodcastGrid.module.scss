@@ -1,16 +1,23 @@
 .grid {
   margin-top: 5rem;
+  display: block;
+  
+  .loaderRow{
+    display: block;
+  }
 
   .gridRow {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     margin-bottom: 160px;
 
     .col {
       text-align: center;
+      max-width: 24% !important;
     }
 
     .emptyCol {
+      justify-content: center;
       text-align: center;
     }
   }
