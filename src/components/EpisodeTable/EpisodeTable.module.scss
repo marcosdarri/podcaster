@@ -1,0 +1,28 @@
+@import "../../styles/globalStyles.module.scss";
+
+.table {
+  background-color: white;
+  border-radius: 5px;
+  padding: 0px;
+  margin-top: 20px;
+  box-shadow: 5px 5px 10px 2px rgba(199, 195, 195, 0.8);
+
+  .headerRow{
+    background-color: white  !important;
+    th{
+        border-top: 0px;
+    }
+  }
+  tr {
+
+    &:nth-child(odd) {
+      background-color: #e8e8e8;
+    } 
+    td{
+        .link{
+            text-decoration: none;
+            color: $primary !important;
+        }
+    }
+  }
+}
