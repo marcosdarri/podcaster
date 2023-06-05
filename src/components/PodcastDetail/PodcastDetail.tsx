@@ -8,6 +8,10 @@ import EpisodeCounter from "../EpisodeCounter/EpisodeCounter";
 import Loader from "../Loader/Loader";
 import PodcastInfo from "../PodcastInfo/PodcastInfo";
 import EpisodeTable from "../EpisodeTable/EpisodeTable";
+import {
+  createAndDeletePodcastData,
+  getExistingPodcastInfo
+} from "../../utils/helpers";
 
 const PodcastDetail = () => {
   const { id } = useParams();
@@ -17,21 +21,22 @@ const PodcastDetail = () => {
   const [podcastInfoDetail, setPodcastInfoDetail] = useState();
   const [total, setTotal] = useState(0);
 
-  const fetchData = () => {
+  const fetchDataPodcast = () => {
     const localStorageKey = "myPodcastInfoDetail";
     fetch(
       `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`
     )
       .then((response) => response.json())
       .then((fetchData) => {
-        setTotal(fetchData.resultCount -1);
+        setTotal(fetchData.resultCount - 1);
         let newData = fetchData.results;
         let firstObject = newData.shift();
         setPodcastInfoDetail(firstObject);
         setData(newData);
 
         const localStoragePodcasts = {
-          info : firstObject,
+          info: firstObject,
+          infoData: newData,
           timestamp: new Date().getTime(),
         };
         localStorage.setItem(
@@ -48,28 +53,22 @@ const PodcastDetail = () => {
   };
 
   useEffect(() => {
-    getExistingPodcastInfo();
-    //getExistingPodcastInfoDetail();
+    const oneDayInMiliSeconds: number = 2000;
+    const params = {
+      fetchDataPodcast:fetchDataPodcast,
+      setLoading,
+      setPodcastInfoDetail,
+      timeInMiliSeconds: oneDayInMiliSeconds,
+      setData
+    };
+    getExistingPodcastInfo({setPodcastInfo, id})
+    createAndDeletePodcastData(params);
+
+    //We call this function so that it executes every 24hs
     setTimeout(() => {
-      fetchData();
-    }, 500);
+      createAndDeletePodcastData(params);
+    }, oneDayInMiliSeconds);
   }, []);
-
-  const getExistingPodcastInfo = () => {
-    const localStorageKey = "myArrayData";
-    const storedData = localStorage.getItem(localStorageKey);
-    const { podcasts } = JSON.parse(storedData);
-    const podcast = podcasts.filter((pod: any) => pod.id === id)[0];
-    setPodcastInfo(podcast);
-  };
-
-  const getExistingPodcastInfoDetail = () => {
-    const localStorageKey = "myPodcastInfoDetail";
-    const storedData = localStorage.getItem(localStorageKey);
-    const { podcasts } = JSON.parse(storedData);
-    const podcast = podcasts.filter((pod: any) => pod.id === id)[0];
-    setPodcastInfoDetail(podcast);
-  };
 
   return (
     <>
@@ -85,14 +84,20 @@ const PodcastDetail = () => {
           <Container className={style.container} fluid>
             <Row>
               <Col xs="4">
-                <PodcastInfo
-                  info={podcastInfo}
-                  infoDetail={podcastInfoDetail}
-                />
+                {podcastInfo && podcastInfoDetail ? (
+                  <PodcastInfo
+                    info={podcastInfo}
+                    infoDetail={podcastInfoDetail}
+                    id={id}
+                    episodeDetail={false}
+                  />
+                ) : (
+                  <h5>We're sorry. There's no data for this podcast.</h5>
+                )}
               </Col>
               <Col xs="8">
-                <EpisodeCounter total={total} />
-                <EpisodeTable data={data} />
+                {total ? <EpisodeCounter total={total} /> : null}
+                {data ? <EpisodeTable data={data} id={id} /> : null}
               </Col>
             </Row>
           </Container>

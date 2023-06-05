@@ -3,6 +3,12 @@ import { Row } from "reactstrap";
 import Title from "../Title/Title";
 import Filter from "../Filter/Filter";
 import PodcastGrid from "../PodcastGrid/PodcastGrid";
+import {
+  createAndDeleteArray,
+  groupArray,
+  filterPodcast,
+  getExistingData,
+} from "../../utils/helpers";
 
 import style from "./Home.module.scss";
 
@@ -56,54 +62,18 @@ const Home = () => {
       });
   };
 
-  const createAndDeleteArray = (): void => {
-    //Four scenarios:
-    //If the data doesn't exist we fetch it
-    //If the data exists but it's been more than 24 we delete it and fetch again
-    //If the data exists but less than 24hs have passed then we use it.
-
-    const localStorageKey = "myArrayData";
-    const storedData = localStorage.getItem(localStorageKey);
-
-    if (!storedData) {
-      setTimeout(() => {
-        fetchData();
-      }, 500);
-    } else {
-      const { timestamp } = JSON.parse(storedData);
-      const currentTime = new Date().getTime();
-      const elapsedTime = currentTime - timestamp;
-
-      if (elapsedTime > 24 * 60 * 60 * 1000) {
-        console.log("LocalStorage data deleted.");
-        localStorage.removeItem(localStorageKey);
-        setTimeout(() => {
-          fetchData();
-        }, 500);
-      } else {
-        setTimeout(() => {
-          getExistingData();
-          console.log("Fetching localStorage data successful.");
-          setLoading(false);
-        }, 500);
-      }
-    }
-  };
-
-  const getExistingData = () => {
-    const localStorageKey = "myArrayData";
-    const storedData = localStorage.getItem(localStorageKey);
-    const { podcasts } = JSON.parse(storedData);
-    setData(podcasts);
-    setRows(groupArray(podcasts, 4));
-    setFilterText("");
-    setTotal(podcasts.length);
-  };
-
   useEffect(() => {
-    createAndDeleteArray();
+    const oneDayInMiliSeconds:number = 86400000;
+    const params = {
+      getExistingData: getExistingData,
+      fetchData: fetchData,
+      setLoading: setLoading,
+      existingDataParams: { setData, setRows, setFilterText, setTotal },
+      timeInMiliSeconds: oneDayInMiliSeconds
+    }
+    createAndDeleteArray(params);
     //We call this function so that it executes every 24hs
-    setInterval(createAndDeleteArray, 24 * 60 * 60 * 1000);
+    setInterval(() => {createAndDeleteArray(params)},  oneDayInMiliSeconds);
   }, []);
 
   useEffect(() => {
@@ -113,35 +83,12 @@ const Home = () => {
       newPodcastsRows = groupArray(newPodcastsRows, 4);
       setRows(newPodcastsRows);
     } else {
-      getExistingData();
-      // setTotal(data.length);
-      // let newPodcastsRows = groupArray(data, 4);
-      // setRows(newPodcastsRows);
+      getExistingData({ setData, setRows, setFilterText, setTotal });
     }
   }, [filterText]);
 
-  const filterPodcast = (podcasts: any, filterText: string) => {
-    return podcasts.filter(
-      (podcast: any) =>
-        podcast.title.toLowerCase().includes(filterText.toLowerCase()) ||
-        podcast.author.toLowerCase().includes(filterText.toLowerCase())
-    );
-  };
-
-  function groupArray(array: any, groupSize: number) {
-    const groupedArray = [];
-
-    for (let i = 0; i < array.length; i += groupSize) {
-      const group = array.slice(i, i + groupSize);
-      groupedArray.push(group);
-    }
-
-    return groupedArray;
-  }
-
   return (
     <div className={style.container}>
-      
       <Title loading={loading} />
       <Filter setFilterText={setFilterText} total={total} />
       <PodcastGrid loading={loading} total={total} rows={rows} />
