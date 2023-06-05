@@ -4,7 +4,6 @@ import { Col } from "reactstrap";
 import style from "./PlayableEpisode.module.scss";
 
 const PlayableEpisode = ({ playableInfo }) => {
-  console.log(playableInfo);
   return (
     <Col className={style.col}>
       <h2>{playableInfo.trackName}</h2>

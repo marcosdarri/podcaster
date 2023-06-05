@@ -21,6 +21,7 @@ const PodcastDetail = () => {
   const [podcastInfoDetail, setPodcastInfoDetail] = useState();
   const [total, setTotal] = useState(0);
 
+  //This is the function that we use to fetch the data and store it in localStore.
   const fetchDataPodcast = () => {
     const localStorageKey = "myPodcastInfoDetail";
     fetch(
@@ -52,6 +53,7 @@ const PodcastDetail = () => {
       });
   };
 
+  //When we start this component we activate the countdown to delete the data enver 24hs
   useEffect(() => {
     const oneDayInMiliSeconds: number = 2000;
     const params = {
@@ -97,7 +99,7 @@ const PodcastDetail = () => {
               </Col>
               <Col xs="8">
                 {total ? <EpisodeCounter total={total} /> : null}
-                {data ? <EpisodeTable data={data} id={id} /> : null}
+                {data ? <EpisodeTable data={data} id={id} /> : <h5>We're sorry. There's no data for this podcast.</h5>}
               </Col>
             </Row>
           </Container>

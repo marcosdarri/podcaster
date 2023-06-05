@@ -1,3 +1,8 @@
+
+//Four scenarios for the Home component:
+//If the data doesn't exist we fetch it
+//If the data exists but it's been more than 24 we delete it and fetch again
+//If the data exists but less than 24hs have passed then we use it.
 const createAndDeleteArray = ({
   getExistingData,
   fetchData,
@@ -5,10 +10,6 @@ const createAndDeleteArray = ({
   existingDataParams,
   timeInMiliSeconds
 }): void => {
-  //Four scenarios:
-  //If the data doesn't exist we fetch it
-  //If the data exists but it's been more than 24 we delete it and fetch again
-  //If the data exists but less than 24hs have passed then we use it.
 
   const localStorageKey = "myArrayData";
   const storedData = localStorage.getItem(localStorageKey);
@@ -38,6 +39,10 @@ const createAndDeleteArray = ({
   }
 };
 
+//Four scenarios for the PodcastDetail component:
+//If the data doesn't exist we fetch it
+//If the data exists but it's been more than 24 we delete it and fetch again
+//If the data exists but less than 24hs have passed then we use it.
 const createAndDeletePodcastData = ({
   fetchDataPodcast,
   setLoading,
@@ -78,6 +83,8 @@ const createAndDeletePodcastData = ({
   }
 };
 
+//These three functions return information that was already stored in the localStore
+
 const getExistingPodcastInfo = ({ setPodcastInfo, id }) => {
   const localStorageKey = "myArrayData";
   const storedData = localStorage.getItem(localStorageKey);
@@ -94,14 +101,23 @@ const getExistingPodcastInfoDetail = ( setPodcastInfoDetail, setData ) => {
   setPodcastInfoDetail(info);
 };
 
+const getExistingData = ({ setData, setRows, setFilterText, setTotal }) => {
+  const localStorageKey = "myArrayData";
+  const storedData = localStorage.getItem(localStorageKey);
+  const { podcasts } = JSON.parse(storedData);
+  setData(podcasts);
+  setRows(groupArray(podcasts, 4));
+  setFilterText("");
+  setTotal(podcasts.length);
+};
+
+//Groups the array in 4 elements for the Grid in Home component.
 const groupArray = (array: any, groupSize: number) => {
   const groupedArray = [];
-
   for (let i = 0; i < array.length; i += groupSize) {
     const group = array.slice(i, i + groupSize);
     groupedArray.push(group);
   }
-
   return groupedArray;
 };
 
@@ -111,16 +127,6 @@ const filterPodcast = (podcasts: any, filterText: string) => {
       podcast.title.toLowerCase().includes(filterText.toLowerCase()) ||
       podcast.author.toLowerCase().includes(filterText.toLowerCase())
   );
-};
-
-const getExistingData = ({ setData, setRows, setFilterText, setTotal }) => {
-  const localStorageKey = "myArrayData";
-  const storedData = localStorage.getItem(localStorageKey);
-  const { podcasts } = JSON.parse(storedData);
-  setData(podcasts);
-  setRows(groupArray(podcasts, 4));
-  setFilterText("");
-  setTotal(podcasts.length);
 };
 
 export {

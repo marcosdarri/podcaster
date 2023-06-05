@@ -20,6 +20,7 @@ const EpisodeDetail = () => {
   const [podcastInfoDetail, setPodcastInfoDetail] = useState({});
   const [playableInfo, setPlayableInfo] = useState({});
 
+  //Here we get the info we need for the PodcastInfo component.
   useEffect(() => {
     setTimeout(() => {
       getExistingPodcastInfo({ setPodcastInfo, id });
@@ -28,6 +29,7 @@ const EpisodeDetail = () => {
     }, 500);
   }, []);
 
+  //Here we get the infor we need for the PlayableEpisode
   useEffect(() => {
     const info = data.find(
       (dataItem) => dataItem.trackId === parseInt(episodeid)

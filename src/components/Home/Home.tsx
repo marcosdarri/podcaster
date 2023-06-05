@@ -19,6 +19,7 @@ const Home = () => {
   const [filterText, setFilterText] = useState("");
   const [total, setTotal] = useState(0);
 
+  //This is the function that we use to fetch the data and store it in localStore.
   const fetchData = () => {
     const localStorageKey = "myArrayData";
     fetch(
@@ -62,6 +63,7 @@ const Home = () => {
       });
   };
 
+  //When we start this component we activate the countdown to delete the data enver 24hs
   useEffect(() => {
     const oneDayInMiliSeconds:number = 86400000;
     const params = {
@@ -76,6 +78,7 @@ const Home = () => {
     setInterval(() => {createAndDeleteArray(params)},  oneDayInMiliSeconds);
   }, []);
 
+  //Every time we write something in the filter we activate this changes.
   useEffect(() => {
     if (filterText !== "") {
       let newPodcastsRows = filterPodcast(data, filterText);
