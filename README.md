@@ -66,3 +66,7 @@ Para visualizar la SPA en modo _production_ debemos acceder a la URL: http://loc
 [serve]: https://www.npmjs.com/package/serve
 [npm]: https://www.npmjs.com/
 [yarn]: https://yarnpkg.com/lang/en/
+
+### Importante a tener en cuenta
+
+Le agregue un lapso de 0,5 segundos de espera cada vez que se carga una pantalla para simular la tardanza normal que lleva a los servicios traer la infomacion de la base de datos. Esto tambien siver para que se vean los componentes de espera mientras carga la pagina.
