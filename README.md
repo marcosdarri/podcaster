@@ -64,4 +64,4 @@ Para visualizar la SPA en modo _production_ debemos acceder a la URL: http://loc
 
 ### Importante a tener en cuenta
 
-Le agregué un lapso de 0,5 segundos de espera cada vez que se carga una pantalla para simular la tardanza normal que lleva a los servicios traer la infomación de la base de datos. Esto también sive para que se vean los componentes de espera mientras carga la pagina.
+Le agregué un lapso de 0,5 segundos de espera cada vez que se carga una pantalla para simular la tardanza normal que lleva a los servicios traer la infomación de la base de datos. Esto también sirve para que se vean los componentes de espera (Loader) mientras carga la pagina.
