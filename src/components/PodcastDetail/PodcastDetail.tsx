@@ -7,10 +7,9 @@ import Loader from "../Loader/Loader";
 import PodcastInfo from "../PodcastInfo/PodcastInfo";
 import EpisodeTable from "../EpisodeTable/EpisodeTable";
 import {
-  createAndDeletePodcastData,
   getExistingPodcastInfo
 } from "../../utils/helpers";
-import { fetchDataPodcast } from "../../api/api";
+import { fetchDataPodcast, createAndDeletePodcastData } from "../../api/api";
 
 import style from "./PodcastDetail.module.scss";
 

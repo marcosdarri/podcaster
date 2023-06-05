@@ -4,12 +4,11 @@ import Title from "../Title/Title";
 import Filter from "../Filter/Filter";
 import PodcastGrid from "../PodcastGrid/PodcastGrid";
 import {
-  createAndDeleteArray,
   groupArray,
   filterPodcast,
   getExistingData,
 } from "../../utils/helpers";
-import { fetchData } from "../../api/api";
+import { fetchData, createAndDeleteArray } from "../../api/api";
 
 import style from "./Home.module.scss";
 

@@ -1,3 +1,5 @@
+import { groupArray, getExistingPodcastInfoDetail } from "../utils/helpers";
+
 //This is the function that we use to fetch the data and store it in localStore.
 const fetchData = (setTotal,setData, groupArray, setRows, setLoading) => {
   const localStorageKey = "myArrayData";
@@ -72,4 +74,87 @@ const fetchDataPodcast = (id, setTotal, setPodcastInfoDetail, setData, setLoadin
     });
 };
 
-export { fetchData, fetchDataPodcast };
+//Four scenarios for the Home component:
+//If the data doesn't exist we fetch it
+//If the data exists but it's been more than 24 we delete it and fetch again
+//If the data exists but less than 24hs have passed then we use it.
+const createAndDeleteArray = ({
+  getExistingData,
+  fetchData,
+  setLoading,
+  existingDataParams,
+  timeInMiliSeconds
+}): void => {
+
+  const localStorageKey = "myArrayData";
+  const storedData = localStorage.getItem(localStorageKey);
+  const { setData, setRows, setTotal } = existingDataParams;
+
+  if (!storedData) {
+    setTimeout(() => {
+      fetchData(setTotal,setData, groupArray, setRows, setLoading);
+    }, 500);
+  } else {
+    const { timestamp } = JSON.parse(storedData);
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - timestamp;
+
+    if (elapsedTime > timeInMiliSeconds) {
+      console.log("LocalStorage data deleted.");
+      localStorage.removeItem(localStorageKey);
+      setTimeout(() => {
+        fetchData(setTotal,setData, groupArray, setRows, setLoading);
+      }, 500);
+    } else {
+      setTimeout(() => {
+        getExistingData(existingDataParams);
+        console.log("Fetching localStorage data successful.");
+        setLoading(false);
+      }, 500);
+    }
+  }
+};
+
+//Four scenarios for the PodcastDetail component:
+//If the data doesn't exist we fetch it
+//If the data exists but it's been more than 24 we delete it and fetch again
+//If the data exists but less than 24hs have passed then we use it.
+const createAndDeletePodcastData = ({
+  fetchDataPodcast,
+  setLoading,
+  setPodcastInfoDetail,
+  timeInMiliSeconds,
+  setData,
+  id,
+  setTotal
+}): void => {
+
+  const localStorageKey = "myPodcastInfoDetail";
+  const storedData = localStorage.getItem(localStorageKey);
+
+  if (!storedData) {
+    setTimeout(() => {
+      fetchDataPodcast(id, setTotal, setPodcastInfoDetail, setData, setLoading);
+    }, 500);
+  } else {
+    const { timestamp } = JSON.parse(storedData);
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - timestamp;
+
+    if (elapsedTime > timeInMiliSeconds) {
+      console.log("LocalStorage data deleted.");
+      localStorage.removeItem(localStorageKey);
+      setTimeout(() => {
+        fetchDataPodcast(id, setTotal, setPodcastInfoDetail, setData, setLoading);
+      }, 500);
+    } else {
+      setTimeout(() => {
+        getExistingPodcastInfoDetail(setPodcastInfoDetail, setData);
+        console.log("Fetching localStorage data successful.");
+        setLoading(false);
+      }, 500);
+    }
+  }
+};
+
+export { fetchData, fetchDataPodcast, createAndDeleteArray, createAndDeletePodcastData };
