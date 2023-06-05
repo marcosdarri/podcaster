@@ -1,0 +1,22 @@
+.col{
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 5px 5px 10px 2px rgba(199, 195, 195, 0.8);
+
+    h2{
+        font-weight: bold;
+    }
+    .description{
+        margin: 20px 0px;
+    }
+
+    .audio{
+        width: 100%;
+    }
+    .loadingRow{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+}
