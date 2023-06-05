@@ -13,10 +13,11 @@ const createAndDeleteArray = ({
 
   const localStorageKey = "myArrayData";
   const storedData = localStorage.getItem(localStorageKey);
+  const { setData, setRows, setTotal } = existingDataParams;
 
   if (!storedData) {
     setTimeout(() => {
-      fetchData();
+      fetchData(setTotal,setData, groupArray, setRows, setLoading);
     }, 500);
   } else {
     const { timestamp } = JSON.parse(storedData);
@@ -27,7 +28,7 @@ const createAndDeleteArray = ({
       console.log("LocalStorage data deleted.");
       localStorage.removeItem(localStorageKey);
       setTimeout(() => {
-        fetchData();
+        fetchData(setTotal,setData, groupArray, setRows, setLoading);
       }, 500);
     } else {
       setTimeout(() => {
