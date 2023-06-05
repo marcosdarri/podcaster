@@ -4,7 +4,7 @@ En este repositorio se aloja el código de una mini-aplicación para escuchar po
 
 ## Primer paso
 
-Para construir y ejecutar la aplicación deberemos clonar el repositorio e instalar sus dependencias. Para clonar el repositorio es necesario tener instalado Git. Para instalar las dependencias es necesario tener instalado un gestor de dependencias como [npm][npm] o [yarn][yarn].
+Para construir y ejecutar la aplicación deberemos clonar el repositorio e instalar sus dependencias. Para clonar el repositorio es necesario tener instalado Git. Para instalar las dependencias es necesario tener instalado un gestor de dependencias como [npm][npm].
 
 ### Clonar el repositorio
 
@@ -24,10 +24,6 @@ cd podcaster
 Llegados a este punto lo único que faltaría sería instalar las dependencias, para ello:
 
 ```
-yarn install
-```
-o
-```
 npm install
 ```
 
@@ -39,7 +35,7 @@ Tenemos dos modos de ejecución de la aplicación, modo _development_ y modo _pr
 Para ejecutar la aplicación en modo desarrollo debemos situarnos en la raíz del proyecto (donde se encuentra el fichero `package.json`) y ejecutar la siguiente orden:
 
 ```
-yarn start
+npm start
 ```
 
 Esto iniciará un servidor local de desarrollo. Haz clic en http://localhost:3000 para visualizar la SPA en tu navegador. El modo _development_ permite recargar la página en el momento que salvas los cambios realizados en el código.
@@ -49,7 +45,7 @@ Esto iniciará un servidor local de desarrollo. Haz clic en http://localhost:300
 Para ejecutar la aplicación en modo producción debemos situarnos en la raíz del proyecto (donde se encuentra el fichero `package.json`) y ejecutar la siguiente orden:
 
 ```
-yarn build
+npm run build
 ```
 
 Esta orden construye la aplicación minificada generando ficheros estáticos para producción optimizados para un mejor rendimiento y los coloca en el directorio `build`, el cual queda ya preparado para ser desplegado en producción.
@@ -57,15 +53,14 @@ Esta orden construye la aplicación minificada generando ficheros estáticos par
 Se puede servir con un servidor estático, por ejemplo con [serve][serve], podemos hacerlo pasándole el directorio `build` creado anteriormente de la siguiente manera:
 
 ```
-yarn global add serve
+npm install -g serve
 serve -s build
 ```
 
-Para visualizar la SPA en modo _production_ debemos acceder a la URL: http://localhost:5000.
+Para visualizar la SPA en modo _production_ debemos acceder a la URL: http://localhost:3000.
 
 [serve]: https://www.npmjs.com/package/serve
 [npm]: https://www.npmjs.com/
-[yarn]: https://yarnpkg.com/lang/en/
 
 ### Importante a tener en cuenta
 
