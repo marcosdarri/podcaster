@@ -11,7 +11,7 @@ Para construir y ejecutar la aplicación deberemos clonar el repositorio e insta
 Para clonar el repositorio se debe ejecutar la siguiente instrucción:
 
 ```
-git clone https://github.com/jbarcas/podcasts-react.git
+git clone https://github.com/marcosdarri/podcaster.git
 ```
 
 ### Instalar las dependencias
@@ -19,7 +19,7 @@ git clone https://github.com/jbarcas/podcasts-react.git
 Para instalar las dependencias primero nos situaremos en la raíz del proyecto (donde se encuentra el `package.json`):
 
 ```
-cd podcasts-react
+cd podcaster
 ```
 Llegados a este punto lo único que faltaría sería instalar las dependencias, para ello:
 
@@ -69,4 +69,4 @@ Para visualizar la SPA en modo _production_ debemos acceder a la URL: http://loc
 
 ### Importante a tener en cuenta
 
-Le agregue un lapso de 0,5 segundos de espera cada vez que se carga una pantalla para simular la tardanza normal que lleva a los servicios traer la infomacion de la base de datos. Esto tambien siver para que se vean los componentes de espera mientras carga la pagina.
+Le agregué un lapso de 0,5 segundos de espera cada vez que se carga una pantalla para simular la tardanza normal que lleva a los servicios traer la infomación de la base de datos. Esto también sive para que se vean los componentes de espera mientras carga la pagina.
