@@ -9,6 +9,7 @@ import {
   filterPodcast,
   getExistingData,
 } from "../../utils/helpers";
+import { fetchData } from "../../api/api";
 
 import style from "./Home.module.scss";
 
@@ -18,50 +19,6 @@ const Home = () => {
   const [rows, setRows] = useState([]);
   const [filterText, setFilterText] = useState("");
   const [total, setTotal] = useState(0);
-
-  //This is the function that we use to fetch the data and store it in localStore.
-  const fetchData = () => {
-    const localStorageKey = "myArrayData";
-    fetch(
-      "https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        let newData = [];
-        setTotal(data.feed.entry.length);
-        data.feed.entry.forEach((dataValue: any, index: number) => {
-          let podcast = {
-            id: 0,
-            img: "",
-            title: "",
-            author: "",
-            description: "",
-          };
-          podcast.id = dataValue.id.attributes["im:id"];
-          podcast.img = dataValue["im:image"][2].label;
-          podcast.title = dataValue.title.label;
-          podcast.author = dataValue["im:artist"].label;
-          podcast.description = dataValue.summary.label;
-          newData.push(podcast);
-        });
-        setData(newData);
-        let rows = groupArray(newData, 4);
-        setRows(rows);
-
-        const localStoragePodcasts = {
-          podcasts: newData,
-          timestamp: new Date().getTime(),
-        };
-        localStorage.setItem(
-          localStorageKey,
-          JSON.stringify(localStoragePodcasts)
-        );
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log("Error fetching podcast data: ", error);
-      });
-  };
 
   //When we start this component we activate the countdown to delete the data enver 24hs
   useEffect(() => {

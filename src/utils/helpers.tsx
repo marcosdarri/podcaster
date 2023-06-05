@@ -49,7 +49,9 @@ const createAndDeletePodcastData = ({
   setLoading,
   setPodcastInfoDetail,
   timeInMiliSeconds,
-  setData
+  setData,
+  id,
+  setTotal
 }): void => {
   //Four scenarios:
   //If the data doesn't exist we fetch it
@@ -61,7 +63,7 @@ const createAndDeletePodcastData = ({
 
   if (!storedData) {
     setTimeout(() => {
-      fetchDataPodcast();
+      fetchDataPodcast(id, setTotal, setPodcastInfoDetail, setData, setLoading);
     }, 500);
   } else {
     const { timestamp } = JSON.parse(storedData);
@@ -72,7 +74,7 @@ const createAndDeletePodcastData = ({
       console.log("LocalStorage data deleted.");
       localStorage.removeItem(localStorageKey);
       setTimeout(() => {
-        fetchDataPodcast();
+        fetchDataPodcast(id, setTotal, setPodcastInfoDetail, setData, setLoading);
       }, 500);
     } else {
       setTimeout(() => {

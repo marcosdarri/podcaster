@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Container } from "reactstrap";
 import Title from "../Title/Title";
-
-import style from "./PodcastDetail.module.scss";
 import EpisodeCounter from "../EpisodeCounter/EpisodeCounter";
 import Loader from "../Loader/Loader";
 import PodcastInfo from "../PodcastInfo/PodcastInfo";
@@ -12,6 +10,10 @@ import {
   createAndDeletePodcastData,
   getExistingPodcastInfo
 } from "../../utils/helpers";
+import { fetchDataPodcast } from "../../api/api";
+
+import style from "./PodcastDetail.module.scss";
+
 
 const PodcastDetail = () => {
   const { id } = useParams();
@@ -21,47 +23,17 @@ const PodcastDetail = () => {
   const [podcastInfoDetail, setPodcastInfoDetail] = useState();
   const [total, setTotal] = useState(0);
 
-  //This is the function that we use to fetch the data and store it in localStore.
-  const fetchDataPodcast = () => {
-    const localStorageKey = "myPodcastInfoDetail";
-    fetch(
-      `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`
-    )
-      .then((response) => response.json())
-      .then((fetchData) => {
-        setTotal(fetchData.resultCount - 1);
-        let newData = fetchData.results;
-        let firstObject = newData.shift();
-        setPodcastInfoDetail(firstObject);
-        setData(newData);
-
-        const localStoragePodcasts = {
-          info: firstObject,
-          infoData: newData,
-          timestamp: new Date().getTime(),
-        };
-        localStorage.setItem(
-          localStorageKey,
-          JSON.stringify(localStoragePodcasts)
-        );
-
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log("Error fetching podcast data: ", error);
-        setLoading(false);
-      });
-  };
-
   //When we start this component we activate the countdown to delete the data enver 24hs
   useEffect(() => {
     const oneDayInMiliSeconds: number = 2000;
     const params = {
-      fetchDataPodcast:fetchDataPodcast,
+      fetchDataPodcast,
       setLoading,
+      setTotal,
       setPodcastInfoDetail,
       timeInMiliSeconds: oneDayInMiliSeconds,
-      setData
+      setData,
+      id
     };
     getExistingPodcastInfo({setPodcastInfo, id})
     createAndDeletePodcastData(params);

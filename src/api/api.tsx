@@ -36,7 +36,7 @@ const fetchData = (setTotal,setData, groupArray, setRows, setLoading) => {
       setLoading(false);
     })
     .catch((error) => {
-      console.log("Error fetching podcast data: ", error);
+      console.log("Error fetching data: ", error);
     });
 };
 
