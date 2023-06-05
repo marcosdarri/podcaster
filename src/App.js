@@ -3,7 +3,7 @@ import HomePage from "./pages/HomePage.tsx";
 import Podcasts from "./pages/Podcasts.tsx";
 import EpisodeDetailPage from "./pages/EpisodeDetailPage.tsx";
 
-function App() {
+const App = () => {
   return (
     <div className="App">
       <Router>
@@ -11,16 +11,16 @@ function App() {
           <Route exact path="/">
             <HomePage />
           </Route>
+          <Route path="/podcast/:id/episode/:episodeid">
+            <EpisodeDetailPage />
+          </Route>
           <Route path="/podcast/:id">
             <Podcasts />
-          </Route>
-          <Route path="/:episodeid">
-            <EpisodeDetailPage />
           </Route>
         </Switch>
       </Router>
     </div>
   );
-}
+};
 
 export default App;
