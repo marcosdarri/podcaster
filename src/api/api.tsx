@@ -84,7 +84,13 @@ const createAndDeletePodcastData = (params): void => {
 //This is the function that we use to fetch the data and store it in localStore.
 const fetchData = ({ setTotal, setPodcast, setRows, setLoading }) => {
   const localStorageKey = "myArrayData";
-  fetch(`https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json`)
+  const url = `https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json`; // URL de la API
+
+  fetch(url, {
+    headers: {
+      "Access-Control-Allow-Origin": "*", // Uso del comodín "*" para permitir cualquier dominio
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
       let newPodcast: Podcast[] = [];
@@ -122,9 +128,13 @@ const fetchData = ({ setTotal, setPodcast, setRows, setLoading }) => {
 const fetchDataPodcast = ({ id, setEpisodes, setLoading }) => {
   const localStorageKey = "myPodcastInfoDetail";
 
-  fetch(
-    `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`
-  )
+  const url = `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`; // URL de la API
+
+  fetch(url, {
+    headers: {
+      "Access-Control-Allow-Origin": "*", // Uso del comodín "*" para permitir cualquier dominio
+    },
+  })
     .then((response) => response.json())
     .then((fetchData) => {
       let podcastInfoAndEpisodes = fetchData.results;
