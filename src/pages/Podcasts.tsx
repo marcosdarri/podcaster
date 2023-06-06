@@ -1,9 +1,8 @@
-import React from 'react'
-import PodcastDetail from '../components/PodcastDetail/PodcastDetail'
+import Podcast from '../components/Podcasts/Podcast/Podcast'
 
 const Podcasts = () => {
   return (
-    <PodcastDetail/>
+    <Podcast/>
   )
 }
 

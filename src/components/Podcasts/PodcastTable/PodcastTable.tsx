@@ -2,9 +2,9 @@ import { Table } from "reactstrap";
 import moment from "moment";
 import { Link } from "react-router-dom";
 
-import style from "./EpisodeTable.module.scss";
+import style from "./PodcastTable.module.scss";
 
-const EpisodeTable = ({ data, id }) => {
+const PodcastTable = ({ episodes, id }) => {
   const secondsToString = (seconds: number) => {
     var minute: string = Math.floor((seconds / 60) % 60).toString();
     minute = parseInt(minute) < 10 ? "0" + minute : minute;
@@ -24,7 +24,7 @@ const EpisodeTable = ({ data, id }) => {
       </thead>
 
       <tbody>
-        {data.map((tableItem: any, index: number) => {
+        {episodes.map((tableItem: any, index: number) => {
           const episodeid = tableItem.trackId
           return (
             <tr key={index}>
@@ -48,4 +48,4 @@ const EpisodeTable = ({ data, id }) => {
   );
 };
 
-export default EpisodeTable;
+export default PodcastTable;

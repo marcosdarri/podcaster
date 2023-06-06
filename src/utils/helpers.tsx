@@ -1,3 +1,5 @@
+import { PodcastGeneralInfo, Podcast, Episode } from "../Interfaces/Interfaces";
+
 //These three functions return information that was already stored in the localStore
 
 const getExistingPodcastInfo = ({ setPodcastInfo, id }) => {
@@ -8,40 +10,47 @@ const getExistingPodcastInfo = ({ setPodcastInfo, id }) => {
   setPodcastInfo(podcast);
 };
 
-const getExistingPodcastInfoDetail = ( setPodcastInfoDetail, setData ) => {
+const getExistingPodcastInfoDetail = (setPodcastInfoDetail, setEpisodes) => {
   const localStorageKey = "myPodcastInfoDetail";
   const storedData = localStorage.getItem(localStorageKey);
   const { info, infoData } = JSON.parse(storedData);
-  setData(infoData)
+  setEpisodes(infoData);
   setPodcastInfoDetail(info);
 };
 
-const getExistingData = ({ setData, setRows, setFilterText, setTotal }) => {
-  const localStorageKey = "myArrayData";
+const getExistingData = ( key:string) => {
+  const localStorageKey = key;
   const storedData = localStorage.getItem(localStorageKey);
-  const { podcasts } = JSON.parse(storedData);
-  setData(podcasts);
-  setRows(groupArray(podcasts, 4));
-  setFilterText("");
-  setTotal(podcasts.length);
+  const podcasts = JSON.parse(storedData).podcasts;
+  return podcasts;
 };
 
 //Groups the array in 4 elements for the Grid in Home component.
-const groupArray = (array: any, groupSize: number) => {
-  const groupedArray = [];
+const groupArray = (
+  array: PodcastGeneralInfo[] | Podcast[],
+  groupSize: number
+) => {
+  const groupedArray: any = [];
   for (let i = 0; i < array.length; i += groupSize) {
-    const group = array.slice(i, i + groupSize);
+    const group: PodcastGeneralInfo[] | Podcast[] = array.slice(
+      i,
+      i + groupSize
+    );
     groupedArray.push(group);
   }
   return groupedArray;
 };
 
-const filterPodcast = (podcasts: any, filterText: string) => {
-  return podcasts.filter(
-    (podcast: any) =>
-      podcast.title.toLowerCase().includes(filterText.toLowerCase()) ||
-      podcast.author.toLowerCase().includes(filterText.toLowerCase())
-  );
+const filterPodcast = (podcasts: PodcastGeneralInfo[], filterText: string) => {
+  if (podcasts != null) {
+    return podcasts.filter(
+      (podcast: PodcastGeneralInfo) =>
+        podcast.title.toLowerCase().includes(filterText.toLowerCase()) ||
+        podcast.author.toLowerCase().includes(filterText.toLowerCase())
+    );
+  } else {
+    return podcasts;
+  }
 };
 
 export {
@@ -49,5 +58,5 @@ export {
   getExistingPodcastInfoDetail,
   groupArray,
   filterPodcast,
-  getExistingData
+  getExistingData,
 };

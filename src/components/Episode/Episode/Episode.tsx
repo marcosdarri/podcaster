@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { Col, Row, Container, Spinner } from "reactstrap";
-import PodcastInfo from "../PodcastInfo/PodcastInfo";
+import PodcastInfo from "../../Podcasts/PodcastInfo/PodcastInfo";
+import { useParams } from "react-router-dom";
+import Title from "../../Title/Title";
+import PlayableEpisode from "../PlayableEpisode/PlayableEpisode";
+import Loader from "../../Loader/Loader";
 import {
   getExistingPodcastInfoDetail,
   getExistingPodcastInfo,
-} from "../../utils/helpers";
-import { useParams } from "react-router-dom";
-import Title from "../Title/Title";
+} from "../../../utils/helpers";
 
-import style from "./EpisodeDetail.module.scss";
-import PlayableEpisode from "../PlayableEpisode/PlayableEpisode";
-import Loader from "../Loader/Loader";
+import style from "./Episode.module.scss";
 
-const EpisodeDetail = () => {
+
+const Episode = () => {
   const { id, episodeid } = useParams();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -71,4 +72,4 @@ const EpisodeDetail = () => {
   );
 };
 
-export default EpisodeDetail;
+export default Episode;

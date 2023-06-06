@@ -1,34 +1,116 @@
-import { groupArray, getExistingPodcastInfoDetail } from "../utils/helpers";
+import {
+  groupArray,
+  getExistingData,
+  getExistingPodcastInfoDetail,
+} from "../utils/helpers";
+import { PodcastGeneralInfo, Podcast, Episode } from "../Interfaces/Interfaces";
+
+const createAndDeleteArray = ({
+  fetchDataParams,
+  existingDataParams,
+  timeInMiliSeconds,
+}): void => {
+  const localStorageKey = "myArrayData";
+  const storedData = localStorage.getItem(localStorageKey);
+  const { setLoading } = fetchDataParams;
+  const { setPodcastGeneralInfo, setRows, setTotal } = existingDataParams;
+
+  //If the data doesn't exist we fetch it
+  if (!storedData) {
+    setTimeout(() => {
+      fetchData(fetchDataParams);
+    }, 500);
+  } else {
+    const { timestamp } = JSON.parse(storedData);
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - timestamp;
+
+    //If the data exists but it's been more than 24 we delete it and fetch again
+    if (elapsedTime > timeInMiliSeconds) {
+      console.log("LocalStorage data deleted.");
+      localStorage.removeItem(localStorageKey);
+      setTimeout(() => {
+        fetchData(fetchDataParams);
+      }, 500);
+    } else {
+      //If the data exists but less than 24hs have passed then we use it.
+      setTimeout(() => {
+        const existingPodcasts: PodcastGeneralInfo[] =
+          getExistingData(localStorageKey);
+
+        setPodcastGeneralInfo(existingPodcasts);
+        setRows(groupArray(existingPodcasts, 4));
+        setTotal(existingPodcasts.length);
+
+        console.log("Fetching localStorage data successful.");
+        setLoading(false);
+      }, 500);
+    }
+  }
+};
+
+const createAndDeletePodcastData = (params): void => {
+  const localStorageKey = "myPodcastInfoDetail";
+  const storedData = localStorage.getItem(localStorageKey);
+  const { setPodcastInfo, setEpisodes, timeInMiliSeconds, setLoading } = params;
+
+  //If the data doesn't exist we fetch it
+  if (!storedData) {
+    setTimeout(() => {
+      fetchDataPodcast(params);
+    }, 500);
+  } else {
+    const { timestamp } = JSON.parse(storedData);
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - timestamp;
+
+    //If the data exists but it's been more than 24 we delete it and fetch again
+    if (elapsedTime > timeInMiliSeconds) {
+      console.log("LocalStorage data deleted.");
+      localStorage.removeItem(localStorageKey);
+      setTimeout(() => {
+        fetchDataPodcast(params);
+      }, 500);
+    } else {
+      setTimeout(() => {
+        //If the data exists but less than 24hs have passed then we use it.
+        getExistingPodcastInfoDetail(setPodcastInfo, setEpisodes);
+        console.log("Fetching localStorage data successful.");
+        setLoading(false);
+      }, 500);
+    }
+  }
+};
 
 //This is the function that we use to fetch the data and store it in localStore.
-const fetchData = (setTotal,setData, groupArray, setRows, setLoading) => {
+const fetchData = ({
+  setTotal,
+  setPodcastGeneralInfo,
+  setRows,
+  setLoading,
+}) => {
   const localStorageKey = "myArrayData";
-  fetch("https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json")
+  fetch(`https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json`)
     .then((response) => response.json())
     .then((data) => {
-      let newData = [];
-      setTotal(data.feed.entry.length);
-      data.feed.entry.forEach((dataValue: any, index: number) => {
-        let podcast = {
-          id: 0,
-          img: "",
-          title: "",
-          author: "",
-          description: "",
+      let newPodcastGeneralInfo: PodcastGeneralInfo[] = [];
+      data.feed.entry.forEach((dataValue: any) => {
+        const podcast: PodcastGeneralInfo = {
+          id: dataValue.id.attributes["im:id"],
+          img: dataValue["im:image"][2].label,
+          name: dataValue.title.label,
+          author: dataValue["im:artist"].label,
+          title: dataValue.title.label,
+          summary: dataValue.summary.label,
         };
-        podcast.id = dataValue.id.attributes["im:id"];
-        podcast.img = dataValue["im:image"][2].label;
-        podcast.title = dataValue.title.label;
-        podcast.author = dataValue["im:artist"].label;
-        podcast.description = dataValue.summary.label;
-        newData.push(podcast);
+        newPodcastGeneralInfo.push(podcast);
       });
-      setData(newData);
-      let rows = groupArray(newData, 4);
-      setRows(rows);
+      setPodcastGeneralInfo(newPodcastGeneralInfo);
+      setTotal(newPodcastGeneralInfo.length);
+      setRows(groupArray(newPodcastGeneralInfo, 4));
 
       const localStoragePodcasts = {
-        podcasts: newData,
+        podcasts: newPodcastGeneralInfo,
         timestamp: new Date().getTime(),
       };
       localStorage.setItem(
@@ -43,7 +125,13 @@ const fetchData = (setTotal,setData, groupArray, setRows, setLoading) => {
 };
 
 //This is the function that we use to fetch the data and store it in localStore.
-const fetchDataPodcast = (id, setTotal, setPodcastInfoDetail, setData, setLoading) => {
+const fetchDataPodcast = ({
+  id,
+  setTotal,
+  setPodcastInfoDetail,
+  setData,
+  setLoading,
+}) => {
   const localStorageKey = "myPodcastInfoDetail";
   fetch(
     `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`
@@ -74,87 +162,9 @@ const fetchDataPodcast = (id, setTotal, setPodcastInfoDetail, setData, setLoadin
     });
 };
 
-//Four scenarios for the Home component:
-//If the data doesn't exist we fetch it
-//If the data exists but it's been more than 24 we delete it and fetch again
-//If the data exists but less than 24hs have passed then we use it.
-const createAndDeleteArray = ({
-  getExistingData,
+export {
   fetchData,
-  setLoading,
-  existingDataParams,
-  timeInMiliSeconds
-}): void => {
-
-  const localStorageKey = "myArrayData";
-  const storedData = localStorage.getItem(localStorageKey);
-  const { setData, setRows, setTotal } = existingDataParams;
-
-  if (!storedData) {
-    setTimeout(() => {
-      fetchData(setTotal,setData, groupArray, setRows, setLoading);
-    }, 500);
-  } else {
-    const { timestamp } = JSON.parse(storedData);
-    const currentTime = new Date().getTime();
-    const elapsedTime = currentTime - timestamp;
-
-    if (elapsedTime > timeInMiliSeconds) {
-      console.log("LocalStorage data deleted.");
-      localStorage.removeItem(localStorageKey);
-      setTimeout(() => {
-        fetchData(setTotal,setData, groupArray, setRows, setLoading);
-      }, 500);
-    } else {
-      setTimeout(() => {
-        getExistingData(existingDataParams);
-        console.log("Fetching localStorage data successful.");
-        setLoading(false);
-      }, 500);
-    }
-  }
-};
-
-//Four scenarios for the PodcastDetail component:
-//If the data doesn't exist we fetch it
-//If the data exists but it's been more than 24 we delete it and fetch again
-//If the data exists but less than 24hs have passed then we use it.
-const createAndDeletePodcastData = ({
   fetchDataPodcast,
-  setLoading,
-  setPodcastInfoDetail,
-  timeInMiliSeconds,
-  setData,
-  id,
-  setTotal
-}): void => {
-
-  const localStorageKey = "myPodcastInfoDetail";
-  const storedData = localStorage.getItem(localStorageKey);
-
-  if (!storedData) {
-    setTimeout(() => {
-      fetchDataPodcast(id, setTotal, setPodcastInfoDetail, setData, setLoading);
-    }, 500);
-  } else {
-    const { timestamp } = JSON.parse(storedData);
-    const currentTime = new Date().getTime();
-    const elapsedTime = currentTime - timestamp;
-
-    if (elapsedTime > timeInMiliSeconds) {
-      console.log("LocalStorage data deleted.");
-      localStorage.removeItem(localStorageKey);
-      setTimeout(() => {
-        fetchDataPodcast(id, setTotal, setPodcastInfoDetail, setData, setLoading);
-      }, 500);
-    } else {
-      setTimeout(() => {
-        getExistingPodcastInfoDetail(setPodcastInfoDetail, setData);
-        console.log("Fetching localStorage data successful.");
-        setLoading(false);
-      }, 500);
-    }
-  }
+  createAndDeleteArray,
+  createAndDeletePodcastData,
 };
-
-export { fetchData, fetchDataPodcast, createAndDeleteArray, createAndDeletePodcastData };

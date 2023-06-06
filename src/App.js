@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage.tsx";
+import HomePage from "./pages/Home.tsx";
 import Podcasts from "./pages/Podcasts.tsx";
-import EpisodeDetailPage from "./pages/EpisodeDetailPage.tsx";
+import EpisodeDetailPage from "./pages/Episode.tsx";
 
 const App = () => {
   return (

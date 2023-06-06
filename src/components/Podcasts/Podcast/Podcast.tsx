@@ -1,37 +1,38 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Container } from "reactstrap";
-import Title from "../Title/Title";
-import EpisodeCounter from "../EpisodeCounter/EpisodeCounter";
-import Loader from "../Loader/Loader";
+import Title from "../../Title/Title";
+import Counter from "../Counter/Counter";
+import Loader from "../../Loader/Loader";
 import PodcastInfo from "../PodcastInfo/PodcastInfo";
-import EpisodeTable from "../EpisodeTable/EpisodeTable";
+import PodcastTable from "../PodcastTable/PodcastTable";
 import {
   getExistingPodcastInfo
-} from "../../utils/helpers";
-import { fetchDataPodcast, createAndDeletePodcastData } from "../../api/api";
+} from "../../../utils/helpers";
+import { createAndDeletePodcastData } from "../../../api/api";
+import { Podcast, Episode } from "../../../Interfaces/Interfaces";
 
-import style from "./PodcastDetail.module.scss";
+import style from "./Podcast.module.scss";
 
 
-const PodcastDetail = () => {
+const PodcastComponent = () => {
   const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [podcastInfo, setPodcastInfo] = useState();
-  const [podcastInfoDetail, setPodcastInfoDetail] = useState();
-  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [podcastInfo, setPodcastInfo] = useState<Podcast>();
+  const [podcast, setPodcast] = useState<Podcast>();
+  const [total, setTotal] = useState<number>(0);
 
   //When we start this component we activate the countdown to delete the data enver 24hs
   useEffect(() => {
-    const oneDayInMiliSeconds: number = 2000;
+    const oneDayInMiliSeconds: number = 86400000;
     const params = {
-      fetchDataPodcast,
       setLoading,
       setTotal,
-      setPodcastInfoDetail,
+      setPodcast,
+      setPodcastInfo,
       timeInMiliSeconds: oneDayInMiliSeconds,
-      setData,
+      setEpisodes,
       id
     };
     getExistingPodcastInfo({setPodcastInfo, id})
@@ -42,6 +43,9 @@ const PodcastDetail = () => {
       createAndDeletePodcastData(params);
     }, oneDayInMiliSeconds);
   }, []);
+
+  console.log("podcast: ", podcast)
+  console.log("podcastInfo: ", podcastInfo)
 
   return (
     <>
@@ -57,10 +61,10 @@ const PodcastDetail = () => {
           <Container className={style.container} fluid>
             <Row>
               <Col xs="4">
-                {podcastInfo && podcastInfoDetail ? (
+                {podcastInfo && podcast ? (
                   <PodcastInfo
                     info={podcastInfo}
-                    infoDetail={podcastInfoDetail}
+                    infoDetail={podcast}
                     id={id}
                     episodeDetail={false}
                   />
@@ -69,8 +73,8 @@ const PodcastDetail = () => {
                 )}
               </Col>
               <Col xs="8">
-                {total ? <EpisodeCounter total={total} /> : null}
-                {data ? <EpisodeTable data={data} id={id} /> : <h5>We're sorry. There's no data for this podcast.</h5>}
+                {total ? <Counter total={total} /> : null}
+                {episodes ? <PodcastTable episodes={episodes} id={id} /> : <h5>We're sorry. There's no data for this podcast.</h5>}
               </Col>
             </Row>
           </Container>
@@ -80,4 +84,4 @@ const PodcastDetail = () => {
   );
 };
 
-export default PodcastDetail;
+export default PodcastComponent;

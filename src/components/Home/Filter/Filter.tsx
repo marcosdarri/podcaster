@@ -1,4 +1,3 @@
-import React from 'react'
 import { Col, Row, Input } from "reactstrap";
 
 import style from "./Filter.module.scss"
