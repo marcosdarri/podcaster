@@ -6,37 +6,39 @@ import Title from "../../Title/Title";
 import PlayableEpisode from "../PlayableEpisode/PlayableEpisode";
 import Loader from "../../Loader/Loader";
 import {
-  getExistingPodcastInfoDetail,
-  getExistingPodcastInfo,
+  getExistingData,
+  getExistingEpisodes
 } from "../../../utils/helpers";
+import { Episode, Podcast } from "../../../Interfaces/Interfaces";
 
 import style from "./Episode.module.scss";
 
-
-const Episode = () => {
+const EpisodeComponent = () => {
   const { id, episodeid } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [podcastInfo, setPodcastInfo] = useState({});
-  const [podcastInfoDetail, setPodcastInfoDetail] = useState({});
-  const [playableInfo, setPlayableInfo] = useState({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [episode, setEpisode]= useState<Episode>();
+  const [podcast, setPodcast]= useState<Podcast>();
+  const key = "myArrayData";
 
   //Here we get the info we need for the PodcastInfo component.
   useEffect(() => {
     setTimeout(() => {
-      getExistingPodcastInfo({ setPodcastInfo, id });
-      getExistingPodcastInfoDetail(setPodcastInfoDetail, setData);
-      setLoading(false)
+      let podcasts = getExistingData(key);
+      setPodcast(podcasts.filter((pod: Podcast) => pod.id === id)[0]);
+
+      getExistingEpisodes(setEpisodes);
+      setLoading(false);
     }, 500);
   }, []);
 
   //Here we get the infor we need for the PlayableEpisode
   useEffect(() => {
-    const info = data.find(
-      (dataItem) => dataItem.trackId === parseInt(episodeid)
+    const info = episodes.find(
+      (dataItem) => parseInt(dataItem.trackId) === parseInt(episodeid)
     );
-    setPlayableInfo(info);
-  }, [data]);
+    setEpisode(info);
+  }, [episodes]);
 
   return (
     <>
@@ -44,32 +46,31 @@ const Episode = () => {
         <Title loading={loading} />
       </div>
       <Row className={style.row}>
-       {playableInfo ? <Container className={style.container} fluid>
-          <Row>
-            <Col xs="4">
-              {podcastInfo && podcastInfoDetail ? (
-                <PodcastInfo
-                  info={podcastInfo}
-                  infoDetail={podcastInfoDetail}
-                  id={id}
-                  episodeDetail={true}
-                />
-              ) : (
-                <h5>We're sorry. There's no data for this podcast.</h5>
-              )}
-            </Col>
-            {playableInfo ? (
-              <Col xs="8">
-                <PlayableEpisode playableInfo={playableInfo} />
+        {podcast ? (
+          <Container className={style.container} fluid>
+            <Row>
+              <Col xs="3">
+                {podcast ? (
+                  <PodcastInfo id={id} podcast={podcast}  episodeDetail={true} />
+                ) : (
+                  <h5>We're sorry. There's no data for this podcast.</h5>
+                )}
               </Col>
-            ) : null}
-          </Row>
-        </Container>:  <Row className={style.loadingRow}>
+              {episode ? (
+                <Col xs="8">
+                  <PlayableEpisode episode={episode} />
+                </Col>
+              ) : null}
+            </Row>
+          </Container>
+        ) : (
+          <Row className={style.loadingRow}>
             <Loader loading={loading} text />
-          </Row>}
+          </Row>
+        )}
       </Row>
     </>
   );
 };
 
-export default Episode;
+export default EpisodeComponent;

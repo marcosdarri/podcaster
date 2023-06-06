@@ -1,9 +1,9 @@
 import {
   groupArray,
   getExistingData,
-  getExistingPodcastInfoDetail,
+  getExistingEpisodes,
 } from "../utils/helpers";
-import { PodcastGeneralInfo, Podcast, Episode } from "../Interfaces/Interfaces";
+import { Podcast } from "../Interfaces/Interfaces";
 
 const createAndDeleteArray = ({
   fetchDataParams,
@@ -13,7 +13,7 @@ const createAndDeleteArray = ({
   const localStorageKey = "myArrayData";
   const storedData = localStorage.getItem(localStorageKey);
   const { setLoading } = fetchDataParams;
-  const { setPodcastGeneralInfo, setRows, setTotal } = existingDataParams;
+  const { setPodcast, setRows, setTotal } = existingDataParams;
 
   //If the data doesn't exist we fetch it
   if (!storedData) {
@@ -35,10 +35,9 @@ const createAndDeleteArray = ({
     } else {
       //If the data exists but less than 24hs have passed then we use it.
       setTimeout(() => {
-        const existingPodcasts: PodcastGeneralInfo[] =
-          getExistingData(localStorageKey);
+        const existingPodcasts: Podcast[] = getExistingData(localStorageKey);
 
-        setPodcastGeneralInfo(existingPodcasts);
+        setPodcast(existingPodcasts);
         setRows(groupArray(existingPodcasts, 4));
         setTotal(existingPodcasts.length);
 
@@ -52,7 +51,7 @@ const createAndDeleteArray = ({
 const createAndDeletePodcastData = (params): void => {
   const localStorageKey = "myPodcastInfoDetail";
   const storedData = localStorage.getItem(localStorageKey);
-  const { setPodcastInfo, setEpisodes, timeInMiliSeconds, setLoading } = params;
+  const { setEpisodes, timeInMiliSeconds, setLoading } = params;
 
   //If the data doesn't exist we fetch it
   if (!storedData) {
@@ -74,7 +73,7 @@ const createAndDeletePodcastData = (params): void => {
     } else {
       setTimeout(() => {
         //If the data exists but less than 24hs have passed then we use it.
-        getExistingPodcastInfoDetail(setPodcastInfo, setEpisodes);
+        getExistingEpisodes(setEpisodes);
         console.log("Fetching localStorage data successful.");
         setLoading(false);
       }, 500);
@@ -83,19 +82,14 @@ const createAndDeletePodcastData = (params): void => {
 };
 
 //This is the function that we use to fetch the data and store it in localStore.
-const fetchData = ({
-  setTotal,
-  setPodcastGeneralInfo,
-  setRows,
-  setLoading,
-}) => {
+const fetchData = ({ setTotal, setPodcast, setRows, setLoading }) => {
   const localStorageKey = "myArrayData";
   fetch(`https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json`)
     .then((response) => response.json())
     .then((data) => {
-      let newPodcastGeneralInfo: PodcastGeneralInfo[] = [];
+      let newPodcast: Podcast[] = [];
       data.feed.entry.forEach((dataValue: any) => {
-        const podcast: PodcastGeneralInfo = {
+        const podcast: Podcast = {
           id: dataValue.id.attributes["im:id"],
           img: dataValue["im:image"][2].label,
           name: dataValue.title.label,
@@ -103,14 +97,14 @@ const fetchData = ({
           title: dataValue.title.label,
           summary: dataValue.summary.label,
         };
-        newPodcastGeneralInfo.push(podcast);
+        newPodcast.push(podcast);
       });
-      setPodcastGeneralInfo(newPodcastGeneralInfo);
-      setTotal(newPodcastGeneralInfo.length);
-      setRows(groupArray(newPodcastGeneralInfo, 4));
+      setPodcast(newPodcast);
+      setTotal(newPodcast.length);
+      setRows(groupArray(newPodcast, 4));
 
       const localStoragePodcasts = {
-        podcasts: newPodcastGeneralInfo,
+        podcasts: newPodcast,
         timestamp: new Date().getTime(),
       };
       localStorage.setItem(
@@ -125,28 +119,22 @@ const fetchData = ({
 };
 
 //This is the function that we use to fetch the data and store it in localStore.
-const fetchDataPodcast = ({
-  id,
-  setTotal,
-  setPodcastInfoDetail,
-  setData,
-  setLoading,
-}) => {
+const fetchDataPodcast = ({ id, setEpisodes, setLoading }) => {
   const localStorageKey = "myPodcastInfoDetail";
+
   fetch(
     `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`
   )
     .then((response) => response.json())
     .then((fetchData) => {
-      setTotal(fetchData.resultCount - 1);
-      let newData = fetchData.results;
-      let firstObject = newData.shift();
-      setPodcastInfoDetail(firstObject);
-      setData(newData);
+      let podcastInfoAndEpisodes = fetchData.results;
+      //The first object of this array is the podcast Information, the rest of the objects are the podcast's episodes.
+      let podcastInfo = podcastInfoAndEpisodes.shift();
+      setEpisodes(podcastInfoAndEpisodes);
 
       const localStoragePodcasts = {
-        info: firstObject,
-        infoData: newData,
+        podcastInfo: podcastInfo,
+        podcastInfoAndEpisodes: podcastInfoAndEpisodes,
         timestamp: new Date().getTime(),
       };
       localStorage.setItem(

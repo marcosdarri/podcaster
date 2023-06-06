@@ -1,4 +1,4 @@
-interface PodcastGeneralInfo {
+interface Podcast {
   id: number;
   img: string;
   name: string;
@@ -7,21 +7,13 @@ interface PodcastGeneralInfo {
   summary: string;
 }
 
-interface Podcast {
-  id: number;
-  img: string;
-  name: string;
-  url: string;
-  author: string;
-}
-
 interface Episode {
   id: number;
   title: string;
   date: string;
   duration: number;
   content: string;
-  url: string;
+  trackId: string;
 }
 
-export { PodcastGeneralInfo, Podcast, Episode };
+export { Podcast, Episode };

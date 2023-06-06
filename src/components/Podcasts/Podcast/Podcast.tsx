@@ -6,46 +6,39 @@ import Counter from "../Counter/Counter";
 import Loader from "../../Loader/Loader";
 import PodcastInfo from "../PodcastInfo/PodcastInfo";
 import PodcastTable from "../PodcastTable/PodcastTable";
-import {
-  getExistingPodcastInfo
-} from "../../../utils/helpers";
 import { createAndDeletePodcastData } from "../../../api/api";
 import { Podcast, Episode } from "../../../Interfaces/Interfaces";
+import { getExistingData } from "../../../utils/helpers";
 
 import style from "./Podcast.module.scss";
-
 
 const PodcastComponent = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
-  const [podcastInfo, setPodcastInfo] = useState<Podcast>();
   const [podcast, setPodcast] = useState<Podcast>();
-  const [total, setTotal] = useState<number>(0);
+  const key: string = "myArrayData";
 
   //When we start this component we activate the countdown to delete the data enver 24hs
   useEffect(() => {
     const oneDayInMiliSeconds: number = 86400000;
     const params = {
       setLoading,
-      setTotal,
-      setPodcast,
-      setPodcastInfo,
-      timeInMiliSeconds: oneDayInMiliSeconds,
       setEpisodes,
-      id
+      timeInMiliSeconds: oneDayInMiliSeconds,
+      id,
     };
-    getExistingPodcastInfo({setPodcastInfo, id})
-    createAndDeletePodcastData(params);
 
+    let podcasts: Podcast[] = getExistingData(key);
+    setPodcast(podcasts.filter((pod: Podcast) => pod.id === id)[0]);
+
+    createAndDeletePodcastData(params);
     //We call this function so that it executes every 24hs
     setTimeout(() => {
       createAndDeletePodcastData(params);
     }, oneDayInMiliSeconds);
   }, []);
 
-  console.log("podcast: ", podcast)
-  console.log("podcastInfo: ", podcastInfo)
 
   return (
     <>
@@ -60,12 +53,11 @@ const PodcastComponent = () => {
         ) : (
           <Container className={style.container} fluid>
             <Row>
-              <Col xs="4">
-                {podcastInfo && podcast ? (
+              <Col xs="3">
+                {podcast ? (
                   <PodcastInfo
-                    info={podcastInfo}
-                    infoDetail={podcast}
                     id={id}
+                    podcast={podcast}
                     episodeDetail={false}
                   />
                 ) : (
@@ -73,8 +65,12 @@ const PodcastComponent = () => {
                 )}
               </Col>
               <Col xs="8">
-                {total ? <Counter total={total} /> : null}
-                {episodes ? <PodcastTable episodes={episodes} id={id} /> : <h5>We're sorry. There's no data for this podcast.</h5>}
+                {episodes ? <Counter total={episodes.length} /> : null}
+                {episodes ? (
+                  <PodcastTable episodes={episodes} id={id} />
+                ) : (
+                  <h5>We're sorry. There's no data for this podcast.</h5>
+                )}
               </Col>
             </Row>
           </Container>

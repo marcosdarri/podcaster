@@ -2,23 +2,15 @@ import style from "./PodcastInfo.module.scss";
 import { Row } from "reactstrap";
 import { Link } from "react-router-dom";
 
-const PodcastInfo = ({ info, infoDetail, id, episodeDetail }) => {
+const PodcastInfo = ({ id, podcast, episodeDetail }) => {
   return (
     <Row className={style.row}>
       {episodeDetail ? (
-        <Link to={`/podcast/${id}`}>
-          <img
-            alt="PodcastInfo"
-            src={infoDetail.artworkUrl600}
-            className={style.img}
-          />
+        <Link to={`/podcast/${id}`} className={style.link}>
+          <img alt="PodcastInfo" src={podcast.img} className={style.img} />
         </Link>
       ) : (
-        <img
-          alt="PodcastInfo"
-          src={infoDetail.artworkUrl600}
-          className={style.img}
-        />
+        <img alt="PodcastInfo" src={podcast.img} className={style.img} />
       )}
       <div className={style.title}>
         {episodeDetail ? (
@@ -26,22 +18,21 @@ const PodcastInfo = ({ info, infoDetail, id, episodeDetail }) => {
             to={`/podcast/${id}`}
             style={{ textDecoration: "none", color: "black" }}
           >
-            <h5>{info.title}</h5>
-            <p>by {infoDetail.artistName}</p>
+            <h5>{podcast.title}</h5>
+            <p>by {podcast.author}</p>
           </Link>
         ) : (
           <>
-           <h5>{info.title}</h5>
-          <p>by {infoDetail.artistName}</p>
+            <h5>{podcast.title}</h5>
+            <p>by {podcast.author}</p>
           </>
-         
         )}
       </div>
       <div className={style.description}>
         <h5>
           <b>Description:</b>
         </h5>
-        <p>{info.description}</p>
+        <p>{podcast.summary}</p>
       </div>
     </Row>
   );

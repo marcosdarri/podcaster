@@ -8,16 +8,16 @@ import {
   getExistingData,
 } from "../../../utils/helpers";
 import { createAndDeleteArray } from "../../../api/api";
-import { PodcastGeneralInfo, Podcast } from "../../../Interfaces/Interfaces";
+import { Podcast } from "../../../Interfaces/Interfaces";
 
 import style from "./Home.module.scss";
 
 const Home = () => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [podcastGeneralInfo, setPodcastGeneralInfo] = useState<
-    PodcastGeneralInfo[]
+  const [podcast, setPodcast] = useState<
+  Podcast[]
   >([]);
-  const [rows, setRows] = useState<PodcastGeneralInfo[][]>([]);
+  const [rows, setRows] = useState<Podcast[][]>([]);
   const [filterText, setFilterText] = useState<string>("");
   const [total, setTotal] = useState<number>(0);
   const key:string = "myArrayData";
@@ -26,8 +26,8 @@ const Home = () => {
   useEffect(() => {
     const oneDayInMiliSeconds: number = 86400000;
     const params = {
-      fetchDataParams: { setTotal, setPodcastGeneralInfo, setRows, setLoading },
-      existingDataParams: {key, setPodcastGeneralInfo, setRows, setTotal },
+      fetchDataParams: { setTotal, setPodcast, setRows, setLoading },
+      existingDataParams: {key, setPodcast, setRows, setTotal },
       timeInMiliSeconds: oneDayInMiliSeconds,
     };
     createAndDeleteArray(params);
@@ -40,16 +40,16 @@ const Home = () => {
   //Every time we write something in the filter we activate this changes.
   useEffect(() => {
     if (filterText !== "") {
-      let newPodcastsRows: PodcastGeneralInfo[] = filterPodcast(
-        podcastGeneralInfo,
+      let newPodcastsRows: Podcast[] = filterPodcast(
+        podcast,
         filterText
       );
       setTotal(newPodcastsRows.length);
       setRows(groupArray(newPodcastsRows, 4));
     } else {
       
-      const existingPodcasts: PodcastGeneralInfo[] = getExistingData( key);
-      setPodcastGeneralInfo(existingPodcasts);
+      const existingPodcasts: Podcast[] = getExistingData( key);
+      setPodcast(existingPodcasts);
       setRows(groupArray(existingPodcasts, 4));
       setTotal(existingPodcasts.length);
     }

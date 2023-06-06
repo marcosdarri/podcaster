@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Col } from "reactstrap";
 import PodcastCard from "../PodcastCard/PodcastCard";
 import Loader from "../../Loader/Loader";
-import { PodcastGeneralInfo } from "../../../Interfaces/Interfaces";
+import { Podcast } from "../../../Interfaces/Interfaces";
 
 import style from "./PodcastGrid.module.scss";
 
@@ -16,10 +16,10 @@ const PodcastGrid = ({ loading, rows, total }) => {
       ) : (
         <>
           {rows && total > 0 ? (
-            rows.map((row: PodcastGeneralInfo[], index: number) => {
+            rows.map((row: Podcast[], index: number) => {
               return (
                 <Row className={style.gridRow} key={index}>
-                  {row.map((rowItem: PodcastGeneralInfo, index: number) => {
+                  {row.map((rowItem: Podcast, index: number) => {
                     return (
                       <Col
                         sm={12 / row.length}
