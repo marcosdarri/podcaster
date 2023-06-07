@@ -16,8 +16,9 @@ const getStoragedPodcastInfoAndEpisodesOrFetchThem = (
   const storedData = localStorage.getItem(localStorageKey);
   const { podcastInfoAndEpisodes } = JSON.parse(storedData);
 
+
   //If the storage podcast data doesn't exist or belongs to a different podcast then we fetch
-  if (!storedData || podcastInfoAndEpisodes[0].trackId !== parseInt(id)) {
+  if (!storedData || (storedData && podcastInfoAndEpisodes[0].trackId !== parseInt(id))) {
     setTimeout(() => {
       return fetchDataPodcast(id, setPodcastInfo, setLoading, setEpisodes);
     }, 500);
@@ -37,9 +38,7 @@ const getStoragedPodcastInfoAndEpisodesOrFetchThem = (
       //If the data exists but less than 24hs have passed then we use it.
       console.log("Fetching localStorage data successful.");
       setPodcastInfo(podcastInfoAndEpisodes[0]);
-      setEpisodes(
-        podcastInfoAndEpisodes.slice(1, podcastInfoAndEpisodes.length)
-      );
+      setEpisodes(podcastInfoAndEpisodes.slice(1, podcastInfoAndEpisodes.length));
       setLoading(false);
       return podcastInfoAndEpisodes;
     }
@@ -53,7 +52,7 @@ const fetchDataPodcast = (id, setPodcastInfo, setLoading, setEpisodes): any => {
 
   fetch(url, {
     headers: {
-      "Access-Control-Allow-Origin": "https://localhost:3000",
+      "Access-Control-Request-Headers": "*",
     },
   })
     .then((response) => response.json())
@@ -64,15 +63,10 @@ const fetchDataPodcast = (id, setPodcastInfo, setLoading, setEpisodes): any => {
         podcastInfoAndEpisodes: podcastInfoAndEpisodes,
         timestamp: new Date().getTime(),
       };
-      localStorage.setItem(
-        localStorageKey,
-        JSON.stringify(localStoragePodcasts)
-      );
+      localStorage.setItem(localStorageKey, JSON.stringify(localStoragePodcasts));
       setPodcastInfo(podcastInfoAndEpisodes[0]);
-      setEpisodes(
-        podcastInfoAndEpisodes.slice(1, podcastInfoAndEpisodes.length)
-      );
-      console.log("Fetching Podcast data successful.", podcastInfoAndEpisodes);
+      setEpisodes(podcastInfoAndEpisodes.slice(1, podcastInfoAndEpisodes.length));
+      console.log("Fetching Podcast data successful.");
       setLoading(false);
     })
     .catch((error) => {
@@ -117,7 +111,7 @@ const fetchData = (): any => {
 
   fetch(url, {
     headers: {
-      "Access-Control-Allow-Origin": "https://localhost:3000",
+      "Access-Control-Request-Headers": "*",
     },
   })
     .then((response) => response.json())
@@ -138,10 +132,7 @@ const fetchData = (): any => {
         podcasts: newPodcast,
         timestamp: new Date().getTime(),
       };
-      localStorage.setItem(
-        localStorageKey,
-        JSON.stringify(localStoragePodcasts)
-      );
+      localStorage.setItem(localStorageKey, JSON.stringify(localStoragePodcasts));
       return newPodcast;
     })
     .catch((error) => {

@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import Title from "../../Title/Title";
 import Filter from "../Filter/Filter";
 import PodcastGrid from "../PodcastGrid/PodcastGrid";
-import {
-  groupArray,
-  filterPodcast,
-  getExistingData,
-} from "../../../utils/helpers";
+import { groupArray, filterPodcast, getExistingData } from "../../../utils/helpers";
 import { getStoragedPodcastOrFetchThem } from "../../../api/api";
 import { Podcast } from "../../../Interfaces/Interfaces";
 
@@ -37,20 +33,24 @@ const Home = () => {
   useEffect(() => {
     if (filterText !== "") {
       let newPodcastsRows: Podcast[] = filterPodcast(podcast, filterText);
-      setTotal(newPodcastsRows.length);
-      setRows(groupArray(newPodcastsRows, 4));
+
+      if (newPodcastsRows) {
+        setTotal(newPodcastsRows.length);
+        setRows(groupArray(newPodcastsRows, 4));
+      }
     } else {
       const existingPodcasts: Podcast[] = getExistingData(key);
-      setPodcast(existingPodcasts);
-      setRows(groupArray(existingPodcasts, 4));
-      setTotal(existingPodcasts.length);
+      if (existingPodcasts) {
+        setPodcast(existingPodcasts);
+        setRows(groupArray(existingPodcasts, 4));
+        setTotal(existingPodcasts.length);
+      }
     }
   }, [filterText]);
 
-
   const getNewPodcastsEveryDay = () => {
     const podcasts: Podcast[] = getStoragedPodcastOrFetchThem(oneDayInMiliSeconds);
-    if(podcasts){
+    if (podcasts) {
       setPodcast(podcasts);
       setRows(groupArray(podcasts, 4));
       setTotal(podcasts.length);

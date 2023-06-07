@@ -28,21 +28,21 @@ const getExistingData = (key: string) => {
 };
 
 const getExistingEpisode = (episodes, id) => {
-  return episodes.find(
-    (dataItem) => parseInt(dataItem.trackId) === parseInt(id)
-  );
+  return episodes.find((dataItem) => parseInt(dataItem.trackId) === parseInt(id));
 };
 
 /*-------------------------------------------------------*/
 
 //Groups the array in 4 elements for the Grid in Home component.
-const groupArray = (array: Podcast[], groupSize: number) => {
-  const groupedArray: any = [];
-  for (let i = 0; i < array.length; i += groupSize) {
-    const group: Podcast[] = array.slice(i, i + groupSize);
-    groupedArray.push(group);
+const groupArray = (array, groupSize: number) => {
+  if (array) {
+    const groupedArray: any = [];
+    for (let i = 0; i < array.length; i += groupSize) {
+      const group: Podcast[] = array.slice(i, i + groupSize);
+      groupedArray.push(group);
+    }
+    return groupedArray;
   }
-  return groupedArray;
 };
 
 const filterPodcast = (podcasts: Podcast[], filterText: string) => {
