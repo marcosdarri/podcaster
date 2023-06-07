@@ -7,53 +7,56 @@ import {
   filterPodcast,
   getExistingData,
 } from "../../../utils/helpers";
-import { createAndDeleteArray } from "../../../api/api";
+import { getStoragedPodcastOrFetchThem } from "../../../api/api";
 import { Podcast } from "../../../Interfaces/Interfaces";
 
 import style from "./Home.module.scss";
 
 const Home = () => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [podcast, setPodcast] = useState<
-  Podcast[]
-  >([]);
+  const [podcast, setPodcast] = useState<Podcast[]>([]);
   const [rows, setRows] = useState<Podcast[][]>([]);
   const [filterText, setFilterText] = useState<string>("");
   const [total, setTotal] = useState<number>(0);
-  const key:string = "myArrayData";
+  const oneDayInMiliSeconds: number = 86400000;
+  const key: string = "myArrayData";
 
-  //When we start this component we activate the countdown to delete the data enver 24hs
+  //This useEffect will activate the getNewPodcastsEveryDay once when the component renders and then every 24hs.
   useEffect(() => {
-    const oneDayInMiliSeconds: number = 86400000;
-    const params = {
-      fetchDataParams: { setTotal, setPodcast, setRows, setLoading },
-      existingDataParams: {key, setPodcast, setRows, setTotal },
-      timeInMiliSeconds: oneDayInMiliSeconds,
-    };
-    createAndDeleteArray(params);
+    getNewPodcastsEveryDay();
+
     //We call this function so that it executes every 24hs
     setInterval(() => {
-      createAndDeleteArray(params);
+      getNewPodcastsEveryDay();
     }, oneDayInMiliSeconds);
+
+    setLoading(false);
   }, []);
 
   //Every time we write something in the filter we activate this changes.
   useEffect(() => {
     if (filterText !== "") {
-      let newPodcastsRows: Podcast[] = filterPodcast(
-        podcast,
-        filterText
-      );
+      let newPodcastsRows: Podcast[] = filterPodcast(podcast, filterText);
       setTotal(newPodcastsRows.length);
       setRows(groupArray(newPodcastsRows, 4));
     } else {
-      
-      const existingPodcasts: Podcast[] = getExistingData( key);
+      const existingPodcasts: Podcast[] = getExistingData(key);
       setPodcast(existingPodcasts);
       setRows(groupArray(existingPodcasts, 4));
       setTotal(existingPodcasts.length);
     }
   }, [filterText]);
+
+
+  const getNewPodcastsEveryDay = () => {
+    const podcasts: Podcast[] = getStoragedPodcastOrFetchThem(oneDayInMiliSeconds);
+    if(podcasts){
+      setPodcast(podcasts);
+      setRows(groupArray(podcasts, 4));
+      setTotal(podcasts.length);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={style.container}>

@@ -6,8 +6,9 @@ import Title from "../../Title/Title";
 import PlayableEpisode from "../PlayableEpisode/PlayableEpisode";
 import Loader from "../../Loader/Loader";
 import {
-  getExistingData,
-  getExistingEpisodes
+  getExistingPodcast,
+  getExistingEpisodes,
+  getExistingEpisode
 } from "../../../utils/helpers";
 import { Episode, Podcast } from "../../../Interfaces/Interfaces";
 
@@ -16,29 +17,20 @@ import style from "./Episode.module.scss";
 const EpisodeComponent = () => {
   const { id, episodeid } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
-  const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [episode, setEpisode]= useState<Episode>();
   const [podcast, setPodcast]= useState<Podcast>();
-  const key = "myArrayData";
+  const [podcastInfo, setPodcastInfo] = useState<any>();
 
   //Here we get the info we need for the PodcastInfo component.
   useEffect(() => {
     setTimeout(() => {
-      let podcasts = getExistingData(key);
-      setPodcast(podcasts.filter((pod: Podcast) => pod.id === id)[0]);
-
-      getExistingEpisodes(setEpisodes);
+      const eps = getExistingEpisodes()
+      setPodcast(getExistingPodcast(id))
+      setEpisode(getExistingEpisode(eps, episodeid))
+      setPodcastInfo(getExistingEpisodes()[0])
       setLoading(false);
     }, 500);
   }, []);
-
-  //Here we get the infor we need for the PlayableEpisode
-  useEffect(() => {
-    const info = episodes.find(
-      (dataItem) => parseInt(dataItem.trackId) === parseInt(episodeid)
-    );
-    setEpisode(info);
-  }, [episodes]);
 
   return (
     <>
@@ -49,9 +41,9 @@ const EpisodeComponent = () => {
         {podcast ? (
           <Container className={style.container} fluid>
             <Row>
-              <Col xs="3">
+              <Col xs="4">
                 {podcast ? (
-                  <PodcastInfo id={id} podcast={podcast}  episodeDetail={true} />
+                  <PodcastInfo id={id} podcast={podcast} podcastInfo={podcastInfo} episodeDetail={true} />
                 ) : (
                   <h5>We're sorry. There's no data for this podcast.</h5>
                 )}

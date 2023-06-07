@@ -1,4 +1,4 @@
-.titleContainer{
+.titleContainer {
   margin-left: 5rem;
 }
 .row {
@@ -6,13 +6,17 @@
   margin: 0px 6%;
   margin-bottom: 40px;
 
-  .loadingRow{
+  .loadingRow {
     display: flex;
     justify-content: center;
     width: 100%;
   }
 
-  .container{
+  .container {
     margin: 0px;
+  }
+  .noData {
+    display: flex;
+    justify-content: center;
   }
 }

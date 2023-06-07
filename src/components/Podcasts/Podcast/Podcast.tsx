@@ -6,39 +6,41 @@ import Counter from "../Counter/Counter";
 import Loader from "../../Loader/Loader";
 import PodcastInfo from "../PodcastInfo/PodcastInfo";
 import PodcastTable from "../PodcastTable/PodcastTable";
-import { createAndDeletePodcastData } from "../../../api/api";
+import { getStoragedPodcastInfoAndEpisodesOrFetchThem } from "../../../api/api";
 import { Podcast, Episode } from "../../../Interfaces/Interfaces";
-import { getExistingData } from "../../../utils/helpers";
+import { getExistingPodcast } from "../../../utils/helpers";
 
 import style from "./Podcast.module.scss";
 
 const PodcastComponent = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
-  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [podcastInfo, setPodcastInfo] = useState<any>();
+  const [episodes, setEpisodes] = useState<Episode[]>();
   const [podcast, setPodcast] = useState<Podcast>();
-  const key: string = "myArrayData";
+  const oneDayInMiliSeconds: number = 86400000;
 
   //When we start this component we activate the countdown to delete the data enver 24hs
   useEffect(() => {
-    const oneDayInMiliSeconds: number = 86400000;
-    const params = {
-      setLoading,
-      setEpisodes,
-      timeInMiliSeconds: oneDayInMiliSeconds,
-      id,
-    };
+    getNewPodcastInfoAndEpisodesEveryDay();
 
-    let podcasts: Podcast[] = getExistingData(key);
-    setPodcast(podcasts.filter((pod: Podcast) => pod.id === id)[0]);
-
-    createAndDeletePodcastData(params);
     //We call this function so that it executes every 24hs
-    setTimeout(() => {
-      createAndDeletePodcastData(params);
+    setInterval(() => {
+      getNewPodcastInfoAndEpisodesEveryDay();
     }, oneDayInMiliSeconds);
   }, []);
 
+  const getNewPodcastInfoAndEpisodesEveryDay = () => {
+    setPodcast(getExistingPodcast(id));
+    //We fetch the Podcast and Episodes
+    getStoragedPodcastInfoAndEpisodesOrFetchThem(
+      id,
+      setPodcastInfo,
+      setEpisodes,
+      setLoading,
+      oneDayInMiliSeconds
+    );
+  };
 
   return (
     <>
@@ -52,27 +54,28 @@ const PodcastComponent = () => {
           </Row>
         ) : (
           <Container className={style.container} fluid>
-            <Row>
-              <Col xs="3">
-                {podcast ? (
+            {podcast && podcastInfo && episodes ? (
+              <Row>
+                <Col xs="4">
+                  {/* We need to use information from both services to display this component, because the pictures from
+                  the podcast services are too small and their quality isn't good enough.*/}
                   <PodcastInfo
                     id={id}
                     podcast={podcast}
+                    podcastInfo={podcastInfo}
                     episodeDetail={false}
                   />
-                ) : (
-                  <h5>We're sorry. There's no data for this podcast.</h5>
-                )}
-              </Col>
-              <Col xs="8">
-                {episodes ? <Counter total={episodes.length} /> : null}
-                {episodes ? (
+                </Col>
+                <Col xs="8">
+                  <Counter total={episodes.length} />
                   <PodcastTable episodes={episodes} id={id} />
-                ) : (
-                  <h5>We're sorry. There's no data for this podcast.</h5>
-                )}
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            ) : (
+              <Row className={style.noData}>
+                <h5>We're sorry. There's no enough data for this podcast.</h5>
+              </Row>
+            )}
           </Container>
         )}
       </Row>
