@@ -1,24 +1,25 @@
-import {
-  groupArray,
-  getExistingData,
-  getExistingEpisodes,
-} from "../utils/helpers";
+import { getExistingData } from "../utils/helpers";
 import { Podcast } from "../Interfaces/Interfaces";
 
-const createAndDeleteArray = ({
-  fetchDataParams,
-  existingDataParams,
-  timeInMiliSeconds,
-}): void => {
-  const localStorageKey = "myArrayData";
-  const storedData = localStorage.getItem(localStorageKey);
-  const { setLoading } = fetchDataParams;
-  const { setPodcast, setRows, setTotal } = existingDataParams;
+//Si no esta guardada hacemos fetch o si esta pero el id no es el mismo fetch de nuevo
+//Si esta pero pasaron 24hs fetch de nuevo
+//Si esta y es ese id se devuelve
 
-  //If the data doesn't exist we fetch it
-  if (!storedData) {
+const getStoragedPodcastInfoAndEpisodesOrFetchThem = (
+  id,
+  setPodcastInfo,
+  setEpisodes,
+  setLoading,
+  oneDayInMiliSeconds
+): any => {
+  const localStorageKey = "myPodcastInfoAndEpisodes";
+  const storedData = localStorage.getItem(localStorageKey);
+  const { podcastInfoAndEpisodes } = JSON.parse(storedData);
+
+  //If the storage podcast data doesn't exist or belongs to a different podcast then we fetch
+  if (!storedData || podcastInfoAndEpisodes[0].trackId !== parseInt(id)) {
     setTimeout(() => {
-      fetchData(fetchDataParams);
+      return fetchDataPodcast(id, setPodcastInfo, setLoading, setEpisodes);
     }, 500);
   } else {
     const { timestamp } = JSON.parse(storedData);
@@ -26,69 +27,97 @@ const createAndDeleteArray = ({
     const elapsedTime = currentTime - timestamp;
 
     //If the data exists but it's been more than 24 we delete it and fetch again
-    if (elapsedTime > timeInMiliSeconds) {
+    if (elapsedTime > oneDayInMiliSeconds) {
       console.log("LocalStorage data deleted.");
       localStorage.removeItem(localStorageKey);
       setTimeout(() => {
-        fetchData(fetchDataParams);
+        fetchDataPodcast(id, setPodcastInfo, setLoading, setEpisodes);
+      }, 500);
+    } else {
+      //If the data exists but less than 24hs have passed then we use it.
+      console.log("Fetching localStorage data successful.");
+      setPodcastInfo(podcastInfoAndEpisodes[0]);
+      setEpisodes(
+        podcastInfoAndEpisodes.slice(1, podcastInfoAndEpisodes.length)
+      );
+      setLoading(false);
+      return podcastInfoAndEpisodes;
+    }
+  }
+};
+
+//This is the function that we use to fetch the data and store it locally.
+const fetchDataPodcast = (id, setPodcastInfo, setLoading, setEpisodes): any => {
+  const localStorageKey = "myPodcastInfoAndEpisodes";
+  const url = `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`; // API's URL
+
+  fetch(url, {
+    headers: {
+      "Access-Control-Allow-Origin": "https://localhost:3000",
+    },
+  })
+    .then((response) => response.json())
+    .then((fetchData) => {
+      const podcastInfoAndEpisodes = fetchData.results;
+      //The first object of this array is the podcast Information, the rest of the objects are the podcast's episodes.
+      const localStoragePodcasts = {
+        podcastInfoAndEpisodes: podcastInfoAndEpisodes,
+        timestamp: new Date().getTime(),
+      };
+      localStorage.setItem(
+        localStorageKey,
+        JSON.stringify(localStoragePodcasts)
+      );
+      setPodcastInfo(podcastInfoAndEpisodes[0]);
+      setEpisodes(
+        podcastInfoAndEpisodes.slice(1, podcastInfoAndEpisodes.length)
+      );
+      console.log("Fetching Podcast data successful.", podcastInfoAndEpisodes);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.log("Error fetching podcast data: ", error);
+    });
+};
+
+const getStoragedPodcastOrFetchThem = (oneDayInMiliSeconds): any => {
+  const localStorageKey = "myArrayData";
+  const storedData = localStorage.getItem(localStorageKey);
+
+  //If the data doesn't exist we fetch it
+  if (!storedData) {
+    return fetchData();
+  } else {
+    const { timestamp } = JSON.parse(storedData);
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - timestamp;
+
+    //If the data exists but it's been more than 24 we delete it and fetch again
+    if (elapsedTime > oneDayInMiliSeconds) {
+      localStorage.removeItem(localStorageKey);
+      console.log("LocalStorage data deleted.");
+      setTimeout(() => {
+        return fetchData();
       }, 500);
     } else {
       //If the data exists but less than 24hs have passed then we use it.
       setTimeout(() => {
         const existingPodcasts: Podcast[] = getExistingData(localStorageKey);
-
-        setPodcast(existingPodcasts);
-        setRows(groupArray(existingPodcasts, 4));
-        setTotal(existingPodcasts.length);
-
         console.log("Fetching localStorage data successful.");
-        setLoading(false);
-      }, 500);
-    }
-  }
-};
-
-const createAndDeletePodcastData = (params): void => {
-  const localStorageKey = "myPodcastInfoDetail";
-  const storedData = localStorage.getItem(localStorageKey);
-  const { setEpisodes, timeInMiliSeconds, setLoading } = params;
-
-  //If the data doesn't exist we fetch it
-  if (!storedData) {
-    setTimeout(() => {
-      fetchDataPodcast(params);
-    }, 500);
-  } else {
-    const { timestamp } = JSON.parse(storedData);
-    const currentTime = new Date().getTime();
-    const elapsedTime = currentTime - timestamp;
-
-    //If the data exists but it's been more than 24 we delete it and fetch again
-    if (elapsedTime > timeInMiliSeconds) {
-      console.log("LocalStorage data deleted.");
-      localStorage.removeItem(localStorageKey);
-      setTimeout(() => {
-        fetchDataPodcast(params);
-      }, 500);
-    } else {
-      setTimeout(() => {
-        //If the data exists but less than 24hs have passed then we use it.
-        getExistingEpisodes(setEpisodes);
-        console.log("Fetching localStorage data successful.");
-        setLoading(false);
+        return existingPodcasts;
       }, 500);
     }
   }
 };
 
 //This is the function that we use to fetch the data and store it in localStore.
-const fetchData = ({ setTotal, setPodcast, setRows, setLoading }) => {
+const fetchData = (): any => {
   const localStorageKey = "myArrayData";
-  const url = `https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json`; // URL de la API
+  const url = `https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json`; // API's URL
 
   fetch(url, {
     headers: {
-      "Access-Control-Allow-Origin": "*", // Uso del comodín "*" para permitir cualquier dominio
+      "Access-Control-Allow-Origin": "https://localhost:3000",
     },
   })
     .then((response) => response.json())
@@ -105,10 +134,6 @@ const fetchData = ({ setTotal, setPodcast, setRows, setLoading }) => {
         };
         newPodcast.push(podcast);
       });
-      setPodcast(newPodcast);
-      setTotal(newPodcast.length);
-      setRows(groupArray(newPodcast, 4));
-
       const localStoragePodcasts = {
         podcasts: newPodcast,
         timestamp: new Date().getTime(),
@@ -117,52 +142,16 @@ const fetchData = ({ setTotal, setPodcast, setRows, setLoading }) => {
         localStorageKey,
         JSON.stringify(localStoragePodcasts)
       );
-      setLoading(false);
+      return newPodcast;
     })
     .catch((error) => {
       console.log("Error fetching data: ", error);
     });
 };
 
-//This is the function that we use to fetch the data and store it in localStore.
-const fetchDataPodcast = ({ id, setEpisodes, setLoading }) => {
-  const localStorageKey = "myPodcastInfoDetail";
-
-  const url = `https://itunes.apple.com/lookup?id=${id}&media=podcast&entity=podcastEpisode&limit=20`; // URL de la API
-
-  fetch(url, {
-    headers: {
-      "Access-Control-Allow-Origin": "*", // Uso del comodín "*" para permitir cualquier dominio
-    },
-  })
-    .then((response) => response.json())
-    .then((fetchData) => {
-      let podcastInfoAndEpisodes = fetchData.results;
-      //The first object of this array is the podcast Information, the rest of the objects are the podcast's episodes.
-      let podcastInfo = podcastInfoAndEpisodes.shift();
-      setEpisodes(podcastInfoAndEpisodes);
-
-      const localStoragePodcasts = {
-        podcastInfo: podcastInfo,
-        podcastInfoAndEpisodes: podcastInfoAndEpisodes,
-        timestamp: new Date().getTime(),
-      };
-      localStorage.setItem(
-        localStorageKey,
-        JSON.stringify(localStoragePodcasts)
-      );
-
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.log("Error fetching podcast data: ", error);
-      setLoading(false);
-    });
-};
-
 export {
   fetchData,
   fetchDataPodcast,
-  createAndDeleteArray,
-  createAndDeletePodcastData,
+  getStoragedPodcastOrFetchThem,
+  getStoragedPodcastInfoAndEpisodesOrFetchThem,
 };
